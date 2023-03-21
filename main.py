@@ -42,7 +42,7 @@ class DailyLovePush:
             "min_temperature": "#007FFF",
             "max_temperature": "#FF2400",
             "love_day": "#FF7F00",
-            "birthday1": "#F5D040",
+            "meet_day": "#F5D040",
             "birthday2": "#F5D040",
             "note_en": "#38B0DE",
             "lucky": "#F5D040",
@@ -265,10 +265,11 @@ class DailyLovePush:
                 headers = {'Content-type': 'application/x-www-form-urlencoded'}
                 conn.request('POST', '/lzmy/index', params, headers)
                 res = conn.getresponse()
-                data = res.read()
-                data = json.loads(data)
+                result = res.read()
+                data = result.decode('utf-8')
+                dict_data = json.loads(data)
                 self.out_data_content["lizhi"] = {
-                    "value":  data["newslist"][0]["saying"],
+                    "value": dict_data["result"]["saying"],
                     "color": self.get_color("lizhi")
                 }
             except Exception as ex:
@@ -449,6 +450,7 @@ class DailyLovePush:
         self.lizhi()    # 励志名言
         self.lucky()   # 星座运势
         self.get_love_days()    # 恋爱纪念日
+        self.get_meet_days()    # 相遇纪念日
         self.get_birthdays()    # 获取所有生日数据
         self.get_poem()     # 诗词
         self.get_air_quality()
@@ -509,9 +511,9 @@ class DailyLovePush:
 
     def get_love_days(self):
         # 获取在一起的日子的日期格式
-        love_year = int(self.config["love_date"].split("-")[0])
-        love_month = int(self.config["love_date"].split("-")[1])
-        love_day = int(self.config["love_date"].split("-")[2])
+        love_year = int(self.config["love_day"].split("-")[0])
+        love_month = int(self.config["love_day"].split("-")[1])
+        love_day = int(self.config["love_day"].split("-")[2])
         love_date = date(love_year, love_month, love_day)
         # 获取在一起的日期差
         love_days = str(self.date_info.get('today').__sub__(love_date)).split(" ")[0]
@@ -519,6 +521,19 @@ class DailyLovePush:
             "value": love_days,
             "color": self.get_color("love_day")
         }
+    
+    def get_meet_days(self):
+        # 获取在一起的日子的日期格式
+        love_year = int(self.config["meet_day"].split("-")[0])
+        love_month = int(self.config["meet_day"].split("-")[1])
+        love_day = int(self.config["meet_day"].split("-")[2])
+        meet_date = date(love_year, love_month, love_day)
+        # 获取在一起的日期差
+        meet_days = str(self.date_info.get('today').__sub__(meet_date)).split(" ")[0]
+        self.out_data_content["meet_day"] = {
+            "value": meet_days,
+            "color": self.get_color("love_day")
+    }
 
     def start(self):
         # 获取accessToken
